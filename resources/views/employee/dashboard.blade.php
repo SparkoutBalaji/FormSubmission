@@ -1,5 +1,5 @@
 @extends('layout.frame')
-@section('title','Employee Dashboard')
+@section('title', 'Employee Dashboard')
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -8,31 +8,47 @@
             <div class="position-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('employee.document') }}">
-                            Document
-                        </a>
                     </li>
                 </ul>
             </div>
         </nav>
-        @php
-        $groupedDocuments = $documents->groupBy('employee.id');
-    @endphp
-
-    @foreach($groupedDocuments as $employeeId => $employeeDocuments)
-        <div>
-            <strong>Employee ID:</strong> {{ $employeeId }}
-            <br>
-            <strong>Email:</strong> {{ $employeeDocuments[0]->employee->email }}
-            <br>
-            <strong>Document Paths:</strong>
-            @foreach($employeeDocuments->pluck('path') as $path)
-                {{ $path }},
-            @endforeach
-        </div>
-        <hr>
-    @endforeach
-        </div>
+        {{-- {{ dd($documents) }} --}}
+        @if($documents)
+   <table class="table table-bordered">
+       <thead>
+           <tr>
+               <th>#</th>
+               <th>Employee EMAIL</th>
+               <th>Document Paths</th>
+               <th>Action</th>
+           </tr>
+       </thead>
+       <tbody>
+           @foreach($documents as $employeeDocument)
+               <tr>
+                  <td>{{ $loop->iteration }}</td>
+                  <td>{{ $employeeDocument->email }}</td>
+                  <td>
+                      @foreach(explode(',', $employeeDocument->paths) as $path)
+                          <a href="{{ route('download.document', ['path' => $path]) }}" download="{{ basename($path) }}">
+                              {{ $path }}
+                          </a>
+                          <br>
+                      @endforeach
+                  </td>
+                  <td>
+                      @foreach(explode(',', $employeeDocument->paths) as $path)
+                          <a href="{{ route('download.document', ['path' => $path]) }}" class="btn btn-primary" download>Download</a>
+                          <a href="{{ route('view.document', ['id' => $employeeDocument->employee_id]) }}" class="btn btn-secondary">View</a>
+                          <br>
+                      @endforeach
+                  </td>
+               </tr>
+           @endforeach
+       </tbody>
+   </table>
+@endif
+    </div>
 </div>
 
 @endsection

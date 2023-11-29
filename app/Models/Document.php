@@ -12,6 +12,9 @@ class Document extends Model
         'employee_id',
         'path',
     ];
+    protected $casts = [
+        'path' => 'string',
+    ];
     public function employee()
     {
         return $this->belongsTo(Employee::class);

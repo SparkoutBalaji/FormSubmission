@@ -20,18 +20,23 @@ use App\Models\Employee;
 */
 
 Route::get('/',[AuthController::class,'login'])->name('login');
-Route::get('/logout',[AuthController::class,'logout'])->name('logout');
-Route::post('/authenticate',[AuthController::class,'authenticate'])->name('authenticate');
+Route::post('/',[AuthController::class,'authenticate'])->name('authenticate');
+// Route::get('/logout',[AuthController::class,'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::post('employee/form_document/store/{id}', [DocumentController::class, 'store'])->name('post.form');
 
 Route::get('/employee/create',[EmployeeController::class,'create'])->name('employee.create');
 Route::post('/employee/store',[EmployeeController::class,'store'])->name('employee.store');
 
-// web.php or routes.php
-
 Route::get('employee/{id}/form',[EmployeeController::class,'link_generate'])->name('employee.link_generate');
-Route::post('employee/form_document/store/{id}', [DocumentController::class, 'store'])->name('post.form');
 Route::get('/register/form/{id}',[EmployeeController::class,'register'])->name('register.form');
 Route::post('employee/{employeeId}/registration', [EmployeeController::class,'update'])->name('registration.update');
-Route::get('/employee/document',[EmployeeController::class,'show'])->name('employee.document');
+Route::get('/employee/document/{employee}',[EmployeeController::class,'show'])->name('employee.document');
 Route::get('/employer/employee/document',[AuthController::class,'show'])->name('employees.document');
+
+Route::get('/download-document/{path}', [EmployeeController::class,'downloadDocument'])->name('download.document');
+Route::group(['middleware' => ['auth:employees']], function () {
+    Route::get('/view-document/{id}', [DocumentController::class, 'viewDocument'])->name('view.document');
+ });
 

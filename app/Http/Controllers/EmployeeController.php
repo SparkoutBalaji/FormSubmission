@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Document;
+use PhpParser\Comment\Doc;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
@@ -60,7 +64,6 @@ class EmployeeController extends Controller
         //dd($employee);
 
         if (!$employee) {
-            // Handle the case where the employee is not found
             return back()->with('error', 'Employee not found!');
         }
 
@@ -71,31 +74,45 @@ class EmployeeController extends Controller
     // Retrieve the employee
     $employee = Employee::find($id);
 
-    if (!$employee) {
-        // Handle the case where the employee is not found
-        return back()->with('error', 'Employee not found!');
-    }
 
-    // Validate the request data
     $request->validate([
         'password' => 'required|min:8|confirmed',
         'password_confirmation' => 'required|same:password',
     ]);
 
-    // Update the employee's password
+
     $employee->password = bcrypt($request->input('password')); // Use bcrypt to hash the password
     $employee->save();
+    // $employee = Employee::find($id);
+    // dd($employee);
+    Session::flush();
+    Auth::logout();
 
-    // Redirect to the login page with success message
     return redirect()->route('login')->with('success', 'Employee Registration Successfully. Login Here!');
     }
 
-    public function show(Employee $employee){
+    public function show($id){
+        $document = Document::where('employee_id', $id)->first();
+        // dd($document);
 
-        $documents = Document::with('employee')->where('id',$employee->id)->first();
+        $documents = DB::table('documents')
+        ->select('employee_id', 'path', DB::raw('GROUP_CONCAT(path) as paths'))
+        ->where('employee_id', $id)
+        ->groupBy('employee_id', 'path')
+        ->get();
 
-        return view('employee.dashboard', compact('documents'));
-
+        foreach ($documents as $document) {
+            $employee = Employee::find($document->employee_id);
+            $document->email = $employee->email;
+         }
+         $firstDocument = $documents->first();
+         $employee = Employee::find($firstDocument->employee_id);
+        return view('employee.dashboard', compact('documents','employee'));
     }
 
+    public function downloadDocument($path)
+    {
+        $filePath = public_path("documents/{$path}");
+        return response()->download($filePath);
+    }
 }

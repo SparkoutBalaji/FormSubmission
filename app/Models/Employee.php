@@ -4,27 +4,37 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Contracts\Auth\Authenticatable;
 
-class Employee extends Model
+class Employee extends Model implements Authenticatable
 {
     use HasFactory;
+    use AuthenticatableTrait;
+    protected $primaryKey = 'id'; // <<< ADD THIS
     protected $fillable = [
         'email',
         'forms',
     ];
-    public function formsForFormNumber($formNumber)
+    
+    public function getAuthIdentifierName()
     {
-    // Implement your logic to return the view name based on the form number
-    switch ($formNumber) {
-        case '1':
-            return "form.form_one";
-        case '2':
-            return "form.form_two";
-        case '3':
-            return "form.form_three";
-        // Add more cases as needed
-        default:
-            return null; // or throw an exception, depending on your requirements
+        return 'id'; // or the name of the primary key column
     }
+
+    public function getAuthIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->password; // or the name of the password column
+    }
+    public function documents(){
+        return $this->hasMany(Document::class);
+    }
+
+
 }
-}
+
