@@ -108,6 +108,26 @@ class EmployeeController extends Controller
          $firstDocument = $documents->first();
          $employee = Employee::find($firstDocument->employee_id);
         return view('employee.dashboard', compact('documents','employee'));
+
+    //     $documents = DB::table('documents')
+    //     ->select('employee_id', 'path', DB::raw('GROUP_CONCAT(path) as paths'))
+    //     ->where('employee_id', $id)
+    //     ->groupBy('employee_id', 'path')
+    //     ->get();
+
+    // if ($documents->isEmpty()) {
+    //     // Handle the case where no documents are found for the given $id
+    //     // For example, you might want to redirect or display an error message.
+    //     return 'your.route.for.no.documents';
+    // }
+
+    // foreach ($documents as $documents) {
+    //     $employee = Employee::find($documents->employee_id);
+    //     $documents->email = $employee->email;
+    // }
+
+
+    // return view('employee.dashboard', compact('documents'));
     }
 
     public function downloadDocument($path)

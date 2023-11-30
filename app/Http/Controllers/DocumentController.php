@@ -98,6 +98,10 @@ class DocumentController extends Controller
         }
     }
     public function viewDocument($id){
+        if ($id === null) {
+            return response()->json(['error' => 'Missing ID parameter'], 400);
+        }
+
         $document = Document::where('employee_id', $id)->first();
 
         if (!$document) {

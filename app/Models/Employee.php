@@ -16,7 +16,7 @@ class Employee extends Model implements Authenticatable
         'email',
         'forms',
     ];
-    
+
     public function getAuthIdentifierName()
     {
         return 'id'; // or the name of the primary key column
@@ -33,6 +33,10 @@ class Employee extends Model implements Authenticatable
     }
     public function documents(){
         return $this->hasMany(Document::class);
+    }
+    public function getEmployeeIdAttribute()
+    {
+        return $this->attributes['id']; // Adjust accordingly based on your actual implementation
     }
 
 

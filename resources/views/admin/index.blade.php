@@ -23,15 +23,19 @@
             <tbody>
                 @foreach($documents as $key => $document)
             <tr>
-                <td>{{ $documents->firstItem() + $key }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $document->employee_id }}</td>
                 <td>{{ $document->email }}</td>
                 <td>{{ $document->path ?: 'No Document Paths' }}</td>
-                <td>
-                    @if ($document->path)
+                <td>@if ($document->path)
                         <a href="{{ asset($document->path) }}" class="btn btn-primary" download>Download</a>
-                        <a href="{{ route('view.document', ['id' => $document->employee_id]) }}" class="btn btn-secondary">View</a>
-                        <br><br>
+
+                    @if ($document->employee_id)
+                        <a href="{{ route('view.document', ['id' => $document->employee_id ?? '']) }}" class="btn btn-secondary">View</a>
+                    @else
+                        <span class="btn btn-secondary disabled">View</span>
+                    @endif
+                    <br><br>
                     @endif
                 </td>
             </tr>

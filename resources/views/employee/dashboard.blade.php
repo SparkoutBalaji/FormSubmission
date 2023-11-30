@@ -37,11 +37,15 @@
                       @endforeach
                   </td>
                   <td>
-                      @foreach(explode(',', $employeeDocument->paths) as $path)
-                          <a href="{{ route('download.document', ['path' => $path]) }}" class="btn btn-primary" download>Download</a>
-                          <a href="{{ route('view.document', ['id' => $employeeDocument->employee_id]) }}" class="btn btn-secondary">View</a>
-                          <br>
-                      @endforeach
+                      @if ($employeeDocument->paths) <!-- Check if there are any paths -->
+                          @foreach(explode(',', $employeeDocument->paths) as $path)
+                              <a href="{{ route('download.document', ['path' => $path]) }}" class="btn btn-primary" download>Download</a>
+                              <a href="{{ route('view.document', ['id' => $employeeDocument->employee_id ?? '']) }}" class="btn btn-secondary">View</a>
+                              <br>
+                          @endforeach
+                      @else
+                          <span class="btn btn-secondary disabled">No Documents</span>
+                      @endif
                   </td>
                </tr>
            @endforeach

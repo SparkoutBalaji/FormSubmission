@@ -31,8 +31,8 @@
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
             <a class="navbar-brand" href="#">Employer Form Submission Management</a>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
+            <div class="navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
                     @auth('employers')
                         <!-- Display employer info when logged in as employer -->
                         <li class="nav-item dropdown">

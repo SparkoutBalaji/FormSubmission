@@ -23,34 +23,32 @@ class AuthController extends Controller
     if (Auth::guard('employers')->attempt($credentials)) {
         $user = Auth::guard('employers')->user();
         if ($user->role == 1) {
-            return view('admin.create')->with('success Logged in as an Admin | Employer');
+            return redirect()->route('employee.create')->with('success Logged in as an Admin | Employer');
         }
     }
     if (Auth::guard('employees')->attempt($credentials)) {
         $user = Auth::guard('employees')->user(); // Retrieve the authenticated user
         if ($user->role == 2) {
-            return redirect()->route('employee.document', ['employees' => $request->email])->with('success', 'Logged in as an Employee');
+            return redirect()->route('employee.document', ['employee' => $user->employee_id ?? null])->with('success', 'Logged in as an Employee');
         }
     }
-    return back()->with(['fail' => 'The provided credentials do not match our records.']);
+        return back()->with(['fail' => 'The provided credentials do not match our records.']);
     }
+
     public function show()
     {
-        // $documents = Employee::rightJoin('documents', 'employees.id', '=', 'documents.employee_id')
-        //                         ->select('employees.id as employee_id', 'employees.email', 'documents.path')
-        //                         ->latest('employees.created_at')
-        //                         ->paginate(5);
-
-        $employees = Employee::leftJoin('documents', 'employees.id', '=', 'documents.employee_id')
+        $documents = Employee::rightJoin('documents', 'employees.id', '=', 'documents.employee_id')
                     ->select('employees.id', 'employees.email', 'documents.path')
-                    ->get();
+                    ->latest('employees.created_at')
+                    ->paginate(5);
 
-        return view('admin.index', compact('employees'));
+        return view('admin.index', compact('documents'));
     }
     public function logout()
     {
             Session::flush();
-            Auth::logout();
+            Auth::guard('employers')->logout();
+            Auth::guard('employees')->logout();
             return redirect()->route('login');
     }
 }
